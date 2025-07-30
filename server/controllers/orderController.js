@@ -4,23 +4,21 @@ import Product from "../models/Product.js";
 // Place Order COD : /api/order/cod
 export const placeOrderCOD = async (req, res) => {
   try {
-    const { userId, items, address } = req.body;
+    const userId = req.user._id;
+    const { items, address } = req.body;
 
     if (!address || items.length === 0) {
       return res.json({ success: false, message: "Invalid data" });
     }
 
-    // calculate total amount
     let amount = 0;
     for (const item of items) {
       const product = await Product.findById(item.product);
       amount += product.offerPrice * item.quantity;
     }
 
-    // Add Tax Charge (2%)
-    amount += Math.floor(amount * 0.02);
+    amount += Math.floor(amount * 0.02); // 2% tax
 
-    // Save Order
     await Order.create({
       userId,
       items,
@@ -35,11 +33,13 @@ export const placeOrderCOD = async (req, res) => {
   }
 };
 
+
 //  Get Orders by user Id : /api/order/user
 
 export const getUserOrders = async (req, res) => {
   try {
     const userId = req.user._id;
+    console.log(userId, req.user);
     const orders = await Order.find({
       userId,
       $or: [{ paymentType: "COD" }, { isPaid: true }],
@@ -50,6 +50,7 @@ export const getUserOrders = async (req, res) => {
       .sort({
         createdAt: -1,
       });
+    console.log("order", orders);
     res.json({ success: true, orders });
   } catch (error) {
     res.json({ success: false, message: error.message });

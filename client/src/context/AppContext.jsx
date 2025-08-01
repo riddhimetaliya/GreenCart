@@ -41,8 +41,11 @@ export const AppContextProvider = ({ children }) => {
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems);
+      } else {
+        setUser(null);
       }
     } catch (error) {
+      console.log("User fetch failed:", error);
       setUser(null);
     }
   };

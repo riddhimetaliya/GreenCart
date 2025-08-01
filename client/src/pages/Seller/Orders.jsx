@@ -9,10 +9,9 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      ("");
       const { data } = await axios.get("/api/order/seller");
       if (data.success) {
-        setOrders(data.orders);
+        setOrders(data.Orders);
       } else {
         toast.error(data.message);
       }
@@ -23,7 +22,7 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-  });
+  }, []);
 
   return (
     <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll">
